@@ -36,14 +36,19 @@
         </div>
     </div>
 
+    <footer class="w-full bg-white border-t border-slate-200 text-center py-6 text-slate-500 text-sm mt-auto">
+        <p>© 2026 Resmi Yazışma Bankası. Tüm hakları saklıdır.</p>
+    </footer>
+
     <script>
-        // KOPYALADIĞIN API ANAHTARINI AŞAĞIDAKİ TIRNAKLARIN İÇİNE YAPIŞTIR:
+        // API ANAHTARINI BURAYA YAPIŞTIRMAYI UNUTMA:
         const apiKey = "AQ.Ab8RN6K2FckC5tQFn8Np_FnXq5_JGZ-O9YiuGsi7BPd7vASidw";
 
         async function generateDocument(type) {
             const prompt = document.getElementById('promptInput').value;
             if (!prompt) return;
             document.getElementById('loadingScreen').classList.remove('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
             
             try {
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -59,11 +64,11 @@
                     document.getElementById('textContent').textContent = data.candidates[0].content.parts[0].text;
                     document.getElementById('resultSection').classList.remove('hidden');
                 } else {
-                    document.getElementById('errorBox').textContent = "Bir hata oluştu, lütfen anahtarı kontrol edin.";
+                    document.getElementById('errorBox').textContent = "Bir hata oluştu.";
                     document.getElementById('errorBox').classList.remove('hidden');
                 }
             } catch (err) {
-                document.getElementById('errorBox').textContent = "Sunucu bağlantı hatası. İnternet bağlantınızı kontrol edin.";
+                document.getElementById('errorBox').textContent = "Sunucu bağlantı hatası.";
                 document.getElementById('errorBox').classList.remove('hidden');
             } finally {
                 document.getElementById('loadingScreen').classList.add('hidden');
