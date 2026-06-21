@@ -26,10 +26,10 @@
             <textarea id="promptInput" rows="4" placeholder="İşlem tanımını buraya yazın..." class="w-full bg-[#f8f9fa] border border-slate-300 rounded-lg p-4 outline-none resize-none"></textarea>
             
             <div class="mt-4">
-                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Yapay Zeka Modeli Seçin:</label>
+                <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Model Seçimi:</label>
                 <select id="modelSelect" class="w-full bg-[#f8f9fa] border border-slate-300 rounded-lg p-3 outline-none">
-                    <option value="gemini-2.0-flash">Hızlı ve Seri (Flash - Güncel)</option>
-                    <option value="gemini-1.5-pro">Derin ve Analitik (Pro - Karmaşık)</option>
+                    <option value="gemini-2.0-flash">Hızlı (Flash)</option>
+                    <option value="gemini-1.5-pro">Derin Analitik (Pro)</option>
                 </select>
             </div>
 
@@ -67,7 +67,7 @@
             document.getElementById('errorBox').classList.add('hidden');
             
             try {
-                // Backtick kullanıldı (URL sorununu çözmek için)
+                // Backtick kullanıldı (URL interpolation)
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
                 
                 const response = await fetch(url, {
@@ -83,7 +83,7 @@
                     document.getElementById('textContent').textContent = data.candidates[0].content.parts[0].text;
                     document.getElementById('resultSection').classList.remove('hidden');
                 } else {
-                    document.getElementById('errorBox').textContent = "Google API hatası: Lütfen anahtarı kontrol edin.";
+                    document.getElementById('errorBox').textContent = "Google API hatası.";
                     document.getElementById('errorBox').classList.remove('hidden');
                 }
             } catch (err) {
