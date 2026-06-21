@@ -3,382 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resmi Yazışma Bankası - Nadir Mantaş</title>
-    
-    <!-- Tailwind CSS -->
+    <title>Resmi Yazışma Bankası</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Lucide Icons (Vanilla JS için) -->
     <script src="https://unpkg.com/lucide@latest"></script>
-
     <style>
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; }
-            #result-container { 
-                box-shadow: none !important; 
-                border: none !important; 
-                padding: 0 !important; 
-                margin: 0 !important;
-                min-height: auto !important;
-            }
-            .print-hidden-watermark { display: none !important; }
-        }
-        .fade-in { animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
-        /* Spinner animasyonu için */
         .spin { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-[#f8f9fa] text-slate-800 font-sans min-h-screen flex flex-col items-center">
-
-    <!-- Üst Bilgi Barı -->
-    <div class="w-full bg-[#1a237e] text-white py-2 px-4 text-xs sm:text-sm flex justify-between items-center no-print shadow-md z-10">
-        <div class="flex items-center gap-2">
-            <i data-lucide="shield-check" class="w-4 h-4 text-green-400"></i>
-            <span class="hidden sm:inline">Güvenli Sistem Bağlantısı</span>
-            <span class="sm:hidden">Güvenli Bağlantı</span>
-        </div>
-        <div class="font-medium tracking-wide">
-            Sistem Geliştiricisi: <span class="text-yellow-400 font-bold">Nadir Mantaş</span>
-        </div>
+    <div class="w-full bg-[#1a237e] text-white py-2 px-4 text-xs sm:text-sm flex justify-center items-center shadow-md">
+        <span>Güvenli Sistem Bağlantısı</span>
     </div>
 
-    <div class="w-full max-w-4xl py-6 px-4 sm:px-6 lg:px-8 space-y-6 flex-1 flex flex-col">
-        
-        <!-- Header -->
-        <header class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4 no-print">
-            <div class="flex items-center gap-5 w-full">
-                <div class="w-14 h-14 bg-[#1a237e] text-white rounded-lg flex items-center justify-center shadow-md shrink-0">
-                    <i data-lucide="scale" class="w-8 h-8"></i>
-                </div>
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Resmi Yazışma Bankası</h1>
-                    <p class="text-sm text-slate-500 mt-1 font-medium">Otomatik Mevzuat ve Dilekçe Oluşturma Sistemi v1.0</p>
-                </div>
-            </div>
+    <div class="w-full max-w-4xl py-6 px-4 flex-1 flex flex-col">
+        <header class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6 text-center">
+            <h1 class="text-2xl font-bold text-[#1a237e]">Resmi Yazışma Bankası</h1>
+            <p class="text-sm text-slate-500">Otomatik Mevzuat ve Dilekçe Oluşturma Sistemi</p>
         </header>
 
-        <!-- Ana İşlem Alanı -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 no-print">
-            <label for="promptInput" class="block text-sm font-bold text-[#1a237e] mb-3 uppercase tracking-wider">
-                İşlem Tanımı
-            </label>
-            <div class="relative">
-                <textarea
-                    id="promptInput"
-                    rows="4"
-                    placeholder="Örn: Askerlik şubesine tecil bozma ile ilgili resmi bir yazı hazırla..."
-                    class="w-full bg-[#f8f9fa] border border-slate-300 rounded-lg p-4 pr-12 focus:ring-2 focus:ring-[#1a237e] focus:border-[#1a237e] transition-all outline-none resize-none text-base"
-                ></textarea>
-                <button 
-                    id="clearBtn"
-                    class="absolute top-4 right-4 text-slate-400 hover:text-red-500 transition-colors hidden"
-                    title="İçeriği Temizle"
-                >
-                    <i data-lucide="trash-2" class="w-5 h-5"></i>
-                </button>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <textarea id="promptInput" rows="4" placeholder="İşlem tanımını buraya yazın..." class="w-full bg-[#f8f9fa] border border-slate-300 rounded-lg p-4 outline-none resize-none"></textarea>
+            <div class="mt-4 flex gap-4">
+                <button onclick="generateDocument('dilekce')" class="flex-1 bg-[#1a237e] text-white py-3 rounded-lg font-semibold">Belge Oluştur</button>
+                <button onclick="generateDocument('mevzuat')" class="flex-1 bg-[#37474f] text-white py-3 rounded-lg font-semibold">Mevzuat Tara</button>
             </div>
-
-            <!-- Aksiyon Butonları -->
-            <div class="mt-5 flex flex-col sm:flex-row gap-4">
-                <button
-                    id="btnDilekce"
-                    onclick="generateDocument('dilekce')"
-                    class="flex-1 flex items-center justify-center gap-2 bg-[#1a237e] text-white py-3.5 px-6 rounded-lg hover:bg-blue-900 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors font-semibold shadow-sm text-sm sm:text-base"
-                >
-                    <i data-lucide="file-text" id="iconDilekce" class="w-5 h-5"></i>
-                    Resmi Belge Oluştur
-                </button>
-                
-                <button
-                    id="btnMevzuat"
-                    onclick="generateDocument('mevzuat')"
-                    class="flex-1 flex items-center justify-center gap-2 bg-[#37474f] text-white py-3.5 px-6 rounded-lg hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors font-semibold shadow-sm text-sm sm:text-base"
-                >
-                    <i data-lucide="search" id="iconMevzuat" class="w-5 h-5"></i>
-                    Mevzuat Arşivi Tara
-                </button>
-            </div>
-
-            <!-- Hata Mesajı -->
-            <div id="errorBox" class="mt-5 items-center gap-2 text-red-700 bg-red-50 p-4 rounded-lg border border-red-200 hidden">
-                <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
-                <p id="errorMessage" class="text-sm font-medium"></p>
-            </div>
+            <div id="errorBox" class="mt-4 text-red-600 hidden">Sunucu bağlantı hatası. API anahtarınızı kontrol edin.</div>
         </div>
-
-        <!-- Yükleme Ekranı -->
-        <div id="loadingScreen" class="w-full flex flex-col items-center justify-center py-16 no-print bg-white rounded-xl border border-slate-200 shadow-sm hidden">
-            <i data-lucide="loader-2" class="w-12 h-12 text-[#1a237e] mb-4 spin"></i>
-            <p class="text-[#1a237e] font-semibold text-lg text-center px-4">Sistem Veritabanı Taranıyor...</p>
-            <p class="text-slate-500 text-sm mt-2 text-center px-4">Belgeniz resmi kurallara uygun olarak hazırlanıyor, lütfen bekleyiniz.</p>
-        </div>
-
-        <!-- Sonuç Görüntüleme Alanı -->
-        <div id="resultSection" class="w-full flex flex-col fade-in hidden">
-            
-            <!-- Araç Çubuğu -->
-            <div class="flex justify-end gap-3 mb-4 no-print">
-                <button
-                    onclick="copyToClipboard()"
-                    class="flex items-center gap-2 bg-white border border-slate-300 text-slate-700 px-5 py-2.5 rounded-lg hover:bg-slate-50 transition-all text-sm font-semibold shadow-sm"
-                >
-                    <i data-lucide="copy" id="copyIcon" class="w-4 h-4"></i>
-                    <span id="copyText">Metni Kopyala</span>
-                </button>
-                <button
-                    onclick="window.print()"
-                    class="flex items-center gap-2 bg-[#1a237e] text-white px-5 py-2.5 rounded-lg hover:bg-blue-900 transition-all text-sm font-semibold shadow-sm"
-                >
-                    <i data-lucide="printer" class="w-4 h-4"></i>
-                    Belgeyi Yazdır
-                </button>
-            </div>
-
-            <!-- Belge Çıktısı -->
-            <div id="result-container" class="bg-white w-full rounded-xl shadow-lg border border-slate-300 p-6 sm:p-12 md:p-16 min-h-[600px] sm:min-h-[800px] relative overflow-hidden">
-                
-                <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] print-hidden-watermark">
-                    <i data-lucide="scale" class="w-64 h-64 sm:w-96 sm:h-96"></i>
-                </div>
-
-                <!-- Dilekçe Başlığı (Sadece Mevzuat için gösterilecek) -->
-                <div id="mevzuatHeader" class="border-b-2 border-[#1a237e] pb-4 mb-6 hidden relative z-10">
-                    <h2 class="text-xl sm:text-2xl font-bold uppercase tracking-wide text-[#1a237e]">Sistem Bilgi Notu</h2>
-                    <p class="text-sm text-slate-500 mt-1">İlgili kanun ve mevzuat tarama sonuçları</p>
-                </div>
-
-                <!-- Asıl Metin -->
-                <div id="textContent" class="relative z-10 whitespace-pre-wrap"></div>
-            </div>
+        <div id="loadingScreen" class="py-16 text-center hidden"><i data-lucide="loader-2" class="w-12 h-12 mx-auto spin text-[#1a237e]"></i></div>
+        <div id="resultSection" class="bg-white p-8 rounded-xl shadow-lg mt-6 hidden">
+            <div id="textContent" class="whitespace-pre-wrap font-serif"></div>
         </div>
     </div>
-    
-    <!-- Footer -->
-    <footer class="w-full bg-white border-t border-slate-200 text-center py-6 text-slate-500 text-sm no-print mt-auto">
-        <p>© 2026 Resmi Yazışma Bankası. Tüm hakları saklıdır.</p>
-        <p class="mt-1">
-            Geliştirici: <strong class="text-[#1a237e] text-base">Nadir Mantaş</strong>
-        </p>
-    </footer>
 
-    <!-- Ana JavaScript Mantığı -->
     <script>
-        // API Anahtarı (Gerçek sistemde buraya güvenli yoldan eklenmelidir, şu an test için)
-        const apiKey = "";
-        let currentRawText = ""; // Kopyalamak için saklanan metin
+        // KOPYALADIĞIN API ANAHTARINI AŞAĞIDAKİ TIRNAKLARIN İÇİNE YAPIŞTIR:
+        const apiKey = "AQ.Ab8RN6K2FckC5tQFn8Np_FnXq5_JGZ-O9YiuGsi7BPd7vASidw";
 
-        // Sayfa yüklendiğinde ikonları oluştur
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            
-            const promptInput = document.getElementById('promptInput');
-            const clearBtn = document.getElementById('clearBtn');
-            const btnDilekce = document.getElementById('btnDilekce');
-            const btnMevzuat = document.getElementById('btnMevzuat');
-
-            // İnput değiştiğinde temizle butonunu göster/gizle ve butonları aktif/pasif yap
-            promptInput.addEventListener('input', () => {
-                const val = promptInput.value.trim();
-                if (val.length > 0) {
-                    clearBtn.classList.remove('hidden');
-                    btnDilekce.disabled = false;
-                    btnMevzuat.disabled = false;
-                } else {
-                    clearBtn.classList.add('hidden');
-                    btnDilekce.disabled = true;
-                    btnMevzuat.disabled = true;
-                }
-            });
-
-            // Temizle butonuna tıklayınca
-            clearBtn.addEventListener('click', () => {
-                promptInput.value = '';
-                clearBtn.classList.add('hidden');
-                btnDilekce.disabled = true;
-                btnMevzuat.disabled = true;
-                promptInput.focus();
-            });
-
-            // Başlangıç durumu
-            btnDilekce.disabled = true;
-            btnMevzuat.disabled = true;
-        });
-
-        // Hata gösterme fonksiyonu
-        function showError(msg) {
-            const errorBox = document.getElementById('errorBox');
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = msg;
-            errorBox.classList.remove('hidden');
-            errorBox.classList.add('flex');
-        }
-
-        function hideError() {
-            const errorBox = document.getElementById('errorBox');
-            errorBox.classList.add('hidden');
-            errorBox.classList.remove('flex');
-        }
-
-        // Metin formatlama (Markdown kalın yazıları HTML'e çevirme)
-        function formatText(text) {
-            if (!text) return "";
-            // **kalın** yazıları <strong>kalın</strong> yapar
-            return text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>');
-        }
-
-        // Güvenli Fetch Fonksiyonu
-        async function fetchWithRetry(url, options, retries = 5) {
-            const delays = [1000, 2000, 4000, 8000, 16000];
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    return await response.json();
-                } catch (err) {
-                    if (i === retries - 1) throw err;
-                    await new Promise(resolve => setTimeout(resolve, delays[i]));
-                }
-            }
-        }
-
-        // Ana Üretim Fonksiyonu
         async function generateDocument(type) {
-            const promptInput = document.getElementById('promptInput');
-            const userPrompt = promptInput.value.trim();
-
-            if (!userPrompt) {
-                showError('Lütfen işleme alınacak konuyu detaylıca yazınız.');
-                return;
-            }
-
-            // UI Durumunu Güncelle (Yükleniyor)
-            hideError();
-            document.getElementById('resultSection').classList.add('hidden');
+            const prompt = document.getElementById('promptInput').value;
+            if (!prompt) return;
             document.getElementById('loadingScreen').classList.remove('hidden');
             
-            // Butonları pasifleştir ve ikonları döndür
-            document.getElementById('btnDilekce').disabled = true;
-            document.getElementById('btnMevzuat').disabled = true;
-            
-            const activeIconId = type === 'dilekce' ? 'iconDilekce' : 'iconMevzuat';
-            const originalIcon = type === 'dilekce' ? 'file-text' : 'search';
-            
-            const activeIconElement = document.getElementById(activeIconId);
-            activeIconElement.setAttribute('data-lucide', 'loader-2');
-            activeIconElement.classList.add('spin');
-            lucide.createIcons();
-
-            // API Hazırlığı
-            const systemPrompt = `Sen "Resmi Yazışma Bankası" sisteminin otomatik metin oluşturucu modülüsün.
-            Görevlerin:
-            1. Kullanıcı dilekçe/yazı isterse: Türkiye Cumhuriyeti 'Resmi Yazışma Kuralları Yönetmeliği'ne tam uygun, profesyonel, doğru makama hitap eden ve hiyerarşiye uygun (arz ederim / rica ederim) resmi metinler oluşturmak. 
-            2. Kullanıcı kanun/mevzuat isterse: T.C. kanunlarını, yönetmeliklerini ve genelgelerini baz alarak doğru, net ve anlaşılır hukuki maddeler sunmak.
-            Hiçbir şekilde sohbet etme, kendini tanıtma, yapay zeka olduğunu belli etme. Sadece doğrudan talep edilen resmi belgeyi veya kanun metnini çıktı olarak ver.`;
-
-            let finalPrompt = userPrompt;
-            if (type === 'dilekce') {
-                finalPrompt = `Şu konu hakkında Resmi Yazışma Kurallarına uygun, doğrudan kopyalanıp kullanılabilecek formata sahip bir belge metni oluştur: ${userPrompt}`;
-            } else {
-                finalPrompt = `Şu konunun Türkiye Cumhuriyeti yasalarındaki yeri, ilgili kanun maddeleri ve mevzuatları hakkında resmi bir bilgi notu oluştur: ${userPrompt}`;
-            }
-
-            const payload = {
-                contents: [{ parts: [{ text: finalPrompt }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-                tools: [{ google_search: {} }]
-            };
-
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-                
-                const data = await fetchWithRetry(url, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Konu: ${prompt}. Resmi ${type === 'dilekce' ? 'dilekçe' : 'mevzuat bilgisi'} oluştur.` }] }]
+                    })
                 });
-
-                const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                const data = await response.json();
                 
-                if (generatedText) {
-                    currentRawText = generatedText; // Kopyalama için sakla
-                    
-                    // Görünüm Ayarları
-                    const textContent = document.getElementById('textContent');
-                    const mevzuatHeader = document.getElementById('mevzuatHeader');
-                    
-                    textContent.innerHTML = formatText(generatedText);
-                    
-                    if (type === 'dilekce') {
-                        textContent.className = "relative z-10 font-serif text-[15px] sm:text-[16px] leading-relaxed text-black whitespace-pre-wrap";
-                        mevzuatHeader.classList.add('hidden');
-                    } else {
-                        textContent.className = "relative z-10 font-sans text-[14px] sm:text-[15px] leading-relaxed text-slate-800 whitespace-pre-wrap";
-                        mevzuatHeader.classList.remove('hidden');
-                    }
-
-                    // Sonucu Göster
-                    document.getElementById('loadingScreen').classList.add('hidden');
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    document.getElementById('textContent').textContent = data.candidates[0].content.parts[0].text;
                     document.getElementById('resultSection').classList.remove('hidden');
-
                 } else {
-                    showError("Sistem bir hata ile karşılaştı. Lütfen daha sonra tekrar deneyiniz.");
-                    document.getElementById('loadingScreen').classList.add('hidden');
+                    document.getElementById('errorBox').textContent = "Bir hata oluştu, lütfen anahtarı kontrol edin.";
+                    document.getElementById('errorBox').classList.remove('hidden');
                 }
-
             } catch (err) {
-                console.error(err);
-                showError("Sunucu bağlantı hatası. Lütfen ağ bağlantınızı kontrol edin.");
-                document.getElementById('loadingScreen').classList.add('hidden');
+                document.getElementById('errorBox').textContent = "Sunucu bağlantı hatası. İnternet bağlantınızı kontrol edin.";
+                document.getElementById('errorBox').classList.remove('hidden');
             } finally {
-                // Butonları eski haline getir
-                document.getElementById('btnDilekce').disabled = false;
-                document.getElementById('btnMevzuat').disabled = false;
-                
-                activeIconElement.setAttribute('data-lucide', originalIcon);
-                activeIconElement.classList.remove('spin');
-                lucide.createIcons();
+                document.getElementById('loadingScreen').classList.add('hidden');
             }
         }
-
-        // Kopyalama Fonksiyonu
-        function copyToClipboard() {
-            if (!currentRawText) return;
-            
-            const textArea = document.createElement("textarea");
-            textArea.value = currentRawText;
-            document.body.appendChild(textArea);
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                
-                // Kopyalandı efekti
-                const copyIcon = document.getElementById('copyIcon');
-                const copyText = document.getElementById('copyText');
-                
-                copyIcon.setAttribute('data-lucide', 'check-circle-2');
-                copyIcon.classList.add('text-green-600');
-                copyText.textContent = 'Panoya Kopyalandı';
-                lucide.createIcons();
-                
-                setTimeout(() => {
-                    copyIcon.setAttribute('data-lucide', 'copy');
-                    copyIcon.classList.remove('text-green-600');
-                    copyText.textContent = 'Metni Kopyala';
-                    lucide.createIcons();
-                }, 2000);
-
-            } catch (err) {
-                console.error('Kopyalama başarısız', err);
-                alert("Tarayıcınız kopyalamayı desteklemiyor. Lütfen metni seçip manuel kopyalayın.");
-            }
-            
-            document.body.removeChild(textArea);
-        }
+        lucide.createIcons();
     </script>
 </body>
 </html>
